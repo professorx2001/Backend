@@ -45,14 +45,17 @@ const userSchema = new Schema({
     }
 }, {timestamps : true})
 
+
+//dont use arrow function as they dont have access to THIS.
 userSchema.pre("save",async function(next){
     //so that if some other field changes it doesnt run
     if(!this.isModified("password")) return
-
+    //when password is changed then
     this.password = bcrypt.hash(this.password, 10)
     next()
 })
 
+//validating when user logins 
 userSchema.methods.isPasswordCorrect = async function (password){
    return await bcrypt.compare(password, this.password)
 }
@@ -67,7 +70,7 @@ userSchema.methods.generateAccessToken = function(){
     {
         expiresIn : process.env.ACCESS_TOKEN_EXPIRY
     }
-)
+    )
 }
 userSchema.methods.generateRefreshToken = function(){
     return jwt.sign({
